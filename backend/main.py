@@ -75,6 +75,19 @@ def get_pending_reports(
     return reports
 
 
+@app.get("/reports/active")
+def get_active_reports(
+    db: Session = Depends(get_db)
+):
+    reports = (
+        db.query(Report)
+        .filter(Report.status == "ativo")
+        .all()
+    )
+
+    return reports
+
+
 @app.put("/reports/{report_id}/approve")
 def approve_report(
     report_id: int,

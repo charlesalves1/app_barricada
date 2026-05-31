@@ -1,24 +1,34 @@
 import { useEffect, useState } from "react";
 
 function Admin() {
-  const [reports, setReports] = useState([]);
+  const [pendingReports, setPendingReports] = useState([]);
+  const [activeReports, setActiveReports] = useState([]);
 
-  const loadPendingReports = async () => {
+  const loadData = async () => {
     try {
-      const response = await fetch(
+      const pendingResponse = await fetch(
         "http://127.0.0.1:8000/reports/pending"
       );
 
-      const data = await response.json();
+      const activeResponse = await fetch(
+      "http://127.0.0.1:8000/reports/active"
+      );
 
-      setReports(data);
+      const pendingData =
+        await pendingResponse.json();
+
+      const activeData =
+        await activeResponse.json();
+
+      setPendingReports(pendingData);
+      setActiveReports(activeData);
     } catch (error) {
       console.error(error);
     }
   };
 
   useEffect(() => {
-    loadPendingReports();
+    loadData();
   }, []);
 
   const approveReport = async (id) => {
@@ -29,7 +39,7 @@ function Admin() {
       }
     );
 
-    loadPendingReports();
+    loadData();
   };
 
   const rejectReport = async (id) => {
@@ -40,19 +50,38 @@ function Admin() {
       }
     );
 
-    loadPendingReports();
+    loadData();
+  };
+
+  const removeReport = async (id) => {
+    await fetch(
+      `http://127.0.0.1:8000/reports/${id}/remove`,
+      {
+        method: "PUT",
+      }
+    );
+
+    loadData();
   };
 
   return (
-    <div style={{ padding: "20px" }}>
+    <div
+      style={{
+        padding: "20px",
+        maxWidth: "1200px",
+        margin: "0 auto",
+      }}
+    >
       <h1>Painel Administrativo</h1>
+
+      <hr />
 
       <h2>Barricadas Pendentes</h2>
 
-      {reports.length === 0 ? (
+      {pendingReports.length === 0 ? (
         <p>Nenhuma barricada pendente.</p>
       ) : (
-        reports.map((report) => (
+        pendingReports.map((report) => (
           <div
             key={report.id}
             style={{
@@ -93,6 +122,48 @@ function Admin() {
               }
             >
               Rejeitar
+            </button>
+          </div>
+        ))
+      )}
+
+      <hr />
+
+      <h2>Barricadas Ativas</h2>
+
+      {activeReports.length === 0 ? (
+        <p>Nenhuma barricada ativa.</p>
+      ) : (
+        activeReports.map((report) => (
+          <div
+            key={report.id}
+            style={{
+              border: "1px solid #4caf50",
+              padding: "15px",
+              marginBottom: "10px",
+              borderRadius: "8px",
+            }}
+          >
+            <p>
+              <strong>ID:</strong> {report.id}
+            </p>
+
+            <p>
+              <strong>Latitude:</strong>{" "}
+              {report.latitude}
+            </p>
+
+            <p>
+              <strong>Longitude:</strong>{" "}
+              {report.longitude}
+            </p>
+
+            <button
+              onClick={() =>
+                removeReport(report.id)
+              }
+            >
+              Remover do mapa
             </button>
           </div>
         ))
