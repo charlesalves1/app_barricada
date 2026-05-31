@@ -1,9 +1,16 @@
-from fastapi import FastAPI
-from pydantic import BaseModel
-from datetime import datetime, timedelta
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy.orm import Session
+
+from database import SessionLocal, engine
+from models import Report
+from schemas import ReportCreate
+from database import Base
+
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -12,24 +19,34 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-reports = []
-
-class Report(BaseModel):
-    latitude: float
-    longitude: float
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 @app.post("/report")
-def create_report(report: Report):
-    new_report = {
-        "id": len(reports) + 1,
-        "latitude": report.latitude,
-        "longitude": report.longitude,
-        "created_at": datetime.now(),
-        "status": "ativo"
+def create_report(report: ReportCreate, db: Session = Depends(get_db)):
+
+    new_report = Report(
+        latitude=report.latitude,
+        longitude=report.longitude,
+        status="ativo"
+    )
+
+    db.add(new_report)
+    db.commit()
+    db.refresh(new_report)
+
+    return {
+        "message": "Report criado com sucesso",
+        "id": new_report.id
     }
-    reports.append(new_report)
-    return {"message": "Report criado com sucesso"}
 
 @app.get("/reports")
-def get_reports():
+def get_reports(db: Session = Depends(get_db)):
+
+    reports = db.query(Report).all()
+
     return reports
