@@ -15,13 +15,35 @@ const defaultCenter = {
   lng: -43.1729,
 };
 
+function calculateDistance(lat1, lon1, lat2, lon2) {
+  const R = 6371000;
+
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+
+  const c = 2 * Math.atan2(
+    Math.sqrt(a),
+    Math.sqrt(1 - a)
+  );
+
+  return R * c;
+}
+
 function App() {
   const [points, setPoints] = useState([]);
   const [userLocation, setUserLocation] = useState(null);
+  const [nearestDistance, setNearestDistance] = useState(null);
 
-  // Obtém localização do usuário
+  // GPS em tempo real
   useEffect(() => {
-    navigator.geolocation.getCurrentPosition(
+    const watchId = navigator.geolocation.watchPosition(
       (position) => {
         setUserLocation({
           lat: position.coords.latitude,
@@ -29,7 +51,10 @@ function App() {
         });
       },
       (error) => {
-        console.error("Erro ao obter localização:", error);
+        console.error(
+          "Erro ao obter localização:",
+          error
+        );
       },
       {
         enableHighAccuracy: true,
@@ -37,16 +62,26 @@ function App() {
         maximumAge: 0,
       }
     );
+
+    return () => {
+      navigator.geolocation.clearWatch(watchId);
+    };
   }, []);
 
-  // Carrega barricadas
   const loadPoints = async () => {
     try {
-      const res = await fetch("http://127.0.0.1:8000/reports");
+      const res = await fetch(
+        "http://127.0.0.1:8000/reports"
+      );
+
       const data = await res.json();
+
       setPoints(data);
     } catch (error) {
-      console.error("Erro ao carregar barricadas:", error);
+      console.error(
+        "Erro ao carregar barricadas:",
+        error
+      );
     }
   };
 
@@ -54,61 +89,128 @@ function App() {
     loadPoints();
   }, []);
 
-  // Clique no mapa
+  // Descobrir barricada mais próxima
+  useEffect(() => {
+    if (!userLocation || points.length === 0) {
+      setNearestDistance(null);
+      return;
+    }
+
+    let nearest = Infinity;
+
+    points.forEach((point) => {
+      const distance = calculateDistance(
+        userLocation.lat,
+        userLocation.lng,
+        point.latitude,
+        point.longitude
+      );
+
+      if (distance < nearest) {
+        nearest = distance;
+      }
+    });
+
+    setNearestDistance(nearest);
+  }, [userLocation, points]);
+
   const handleMapClick = async (event) => {
     const lat = event.latLng.lat();
     const lng = event.latLng.lng();
 
     try {
-      await fetch("http://127.0.0.1:8000/report", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          latitude: lat,
-          longitude: lng,
-        }),
-      });
+      await fetch(
+        "http://127.0.0.1:8000/report",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
+          body: JSON.stringify({
+            latitude: lat,
+            longitude: lng,
+          }),
+        }
+      );
 
       loadPoints();
     } catch (error) {
-      console.error("Erro ao criar barricada:", error);
+      console.error(
+        "Erro ao criar barricada:",
+        error
+      );
     }
   };
 
   return (
-    <LoadScript
-      googleMapsApiKey={
-        process.env.REACT_APP_GOOGLE_MAPS_API_KEY
-      }
-    >
-      <GoogleMap
-        mapContainerStyle={containerStyle}
-        center={userLocation || defaultCenter}
-        zoom={15}
-        onClick={handleMapClick}
-      >
-        {/* Localização do usuário */}
-        {userLocation && (
-          <Marker
-            position={userLocation}
-            title="Você está aqui"
-          />
+    <>
+      {/* ALERTA TIPO RADARBOT */}
+      {nearestDistance !== null &&
+        nearestDistance <= 500 && (
+          <div
+            style={{
+              position: "absolute",
+              top: 10,
+              left: "50%",
+              transform: "translateX(-50%)",
+              zIndex: 9999,
+              padding: "15px 25px",
+              borderRadius: "10px",
+              fontWeight: "bold",
+              fontSize: "18px",
+              color: "#fff",
+              backgroundColor:
+                nearestDistance <= 300
+                  ? "#d32f2f"
+                  : "#f57c00",
+              boxShadow:
+                "0 2px 10px rgba(0,0,0,0.3)",
+            }}
+          >
+            {nearestDistance <= 300
+              ? `🚨 ATENÇÃO! Barricada a ${Math.round(
+                  nearestDistance
+                )}m`
+              : `⚠️ Barricada próxima - ${Math.round(
+                  nearestDistance
+                )}m`}
+          </div>
         )}
 
-        {/* Barricadas */}
-        {points.map((point) => (
-          <Marker
-            key={point.id}
-            position={{
-              lat: point.latitude,
-              lng: point.longitude,
-            }}
-          />
-        ))}
-      </GoogleMap>
-    </LoadScript>
+      <LoadScript
+        googleMapsApiKey={
+          process.env
+            .REACT_APP_GOOGLE_MAPS_API_KEY
+        }
+      >
+        <GoogleMap
+          mapContainerStyle={containerStyle}
+          center={
+            userLocation || defaultCenter
+          }
+          zoom={15}
+          onClick={handleMapClick}
+        >
+          {userLocation && (
+            <Marker
+              position={userLocation}
+              title="Você está aqui"
+            />
+          )}
+
+          {points.map((point) => (
+            <Marker
+              key={point.id}
+              position={{
+                lat: point.latitude,
+                lng: point.longitude,
+              }}
+            />
+          ))}
+        </GoogleMap>
+      </LoadScript>
+    </>
   );
 }
 
