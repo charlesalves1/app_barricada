@@ -32,11 +32,4 @@ def create_report(report: Report):
 
 @app.get("/reports")
 def get_reports():
-    now = datetime.now()
-
-    valid_reports = []
-    for r in reports:
-        if now - r["created_at"] < timedelta(hours=6):
-            valid_reports.append(r)
-
-    return valid_reports
+    return reports
