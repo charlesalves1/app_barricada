@@ -6,6 +6,7 @@ import {
 
 import MapPage from "./pages/MapPage";
 import Admin from "./pages/Admin";
+import Navbar from "./components/Navbar";
 
 function App() {
   return (
@@ -13,12 +14,22 @@ function App() {
       <Routes>
         <Route
           path="/"
-          element={<MapPage />}
+          element={
+            <>
+              <MapPage />
+              <Navbar />
+            </>
+          }
         />
 
         <Route
           path="/admin"
-          element={<Admin />}
+          element={
+            <>
+              <Admin />
+              <Navbar />
+            </>
+          }
         />
       </Routes>
     </BrowserRouter>

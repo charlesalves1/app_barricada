@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import {
   GoogleMap,
   Marker,
-  LoadScript,
+  useJsApiLoader,
 } from "@react-google-maps/api";
 
 const containerStyle = {
@@ -40,6 +40,12 @@ function MapPage() {
   const [points, setPoints] = useState([]);
   const [userLocation, setUserLocation] = useState(null);
   const [nearestDistance, setNearestDistance] = useState(null);
+
+  const { isLoaded } = useJsApiLoader({
+    id: "google-map-script",
+    googleMapsApiKey:
+      process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
+  });
 
   // GPS em tempo real
   useEffect(() => {
@@ -143,6 +149,10 @@ function MapPage() {
     }
   };
 
+  if (!isLoaded) {
+    return <div>Carregando mapa...</div>;
+  }
+
   return (
     <>
       {/* ALERTA TIPO RADARBOT */}
@@ -151,7 +161,7 @@ function MapPage() {
           <div
             style={{
               position: "absolute",
-              top: 10,
+              top: 75,
               left: "50%",
               transform: "translateX(-50%)",
               zIndex: 9999,
@@ -178,38 +188,31 @@ function MapPage() {
           </div>
         )}
 
-      <LoadScript
-        googleMapsApiKey={
-          process.env
-            .REACT_APP_GOOGLE_MAPS_API_KEY
+      <GoogleMap
+        mapContainerStyle={containerStyle}
+        center={
+          userLocation || defaultCenter
         }
+        zoom={15}
+        onClick={handleMapClick}
       >
-        <GoogleMap
-          mapContainerStyle={containerStyle}
-          center={
-            userLocation || defaultCenter
-          }
-          zoom={15}
-          onClick={handleMapClick}
-        >
-          {userLocation && (
-            <Marker
-              position={userLocation}
-              title="Você está aqui"
-            />
-          )}
+        {userLocation && (
+          <Marker
+            position={userLocation}
+            title="Você está aqui"
+          />
+        )}
 
-          {points.map((point) => (
-            <Marker
-              key={point.id}
-              position={{
-                lat: point.latitude,
-                lng: point.longitude,
-              }}
-            />
-          ))}
-        </GoogleMap>
-      </LoadScript>
+        {points.map((point) => (
+          <Marker
+            key={point.id}
+            position={{
+              lat: point.latitude,
+              lng: point.longitude,
+            }}
+          />
+        ))}
+      </GoogleMap>
     </>
   );
 }
