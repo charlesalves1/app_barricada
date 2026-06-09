@@ -1,102 +1,153 @@
-# 🧭 App Barricada
+# 🚧 Tem Barricada Aí?
 
-Sistema de mapeamento colaborativo de barricadas, permitindo que usuários registrem e visualizem ocorrências de forma simples e anônima através de um mapa interativo.
+Aplicação colaborativa para monitoramento e visualização de barricadas em ruas, bairros e regiões.
 
----
-
-## 🚀 Funcionalidades
-
-* 📍 Visualização de mapa interativo
-* ➕ Registro de barricadas com um clique
-* 🗺️ Exibição de pontos no mapa em tempo real
-* 💬 Popup com informações básicas
-* 🔄 Atualização dinâmica dos dados
+O sistema permite que qualquer usuário informe anonimamente a existência de uma barricada através do mapa. As informações passam por validação administrativa antes de serem exibidas para os demais usuários.
 
 ---
 
-## 🧱 Tecnologias utilizadas
+## 🎯 Objetivo
 
-### 🔹 Backend
+Ajudar a população a identificar regiões com barricadas, fornecendo uma ferramenta simples, colaborativa e acessível através de navegador ou instalação como aplicativo (PWA).
+
+---
+
+# 🚀 Funcionalidades
+
+### Usuário
+
+* 📍 Localização em tempo real via GPS
+* 🗺️ Visualização de mapa interativo
+* 🚧 Registro anônimo de barricadas
+* 📌 Exibição de barricadas aprovadas
+* ⚠️ Alerta visual de proximidade de barricadas
+* 📱 Compatível com dispositivos móveis
+* 📲 Instalação como aplicativo (PWA)
+
+### Administração
+
+* 📋 Visualização de barricadas pendentes
+* ✅ Aprovação de barricadas
+* ❌ Rejeição de barricadas
+* 🗑️ Remoção de barricadas ativas
+* 🔄 Atualização dinâmica dos registros
+
+---
+
+# 🧱 Tecnologias Utilizadas
+
+## Backend
 
 * Python
 * FastAPI
+* SQLAlchemy
+* SQLite
 * Uvicorn
 
-### 🔹 Frontend
+## Frontend
 
-* JavaScript
 * React
-* Leaflet
-* OpenStreetMap
+* React Router DOM
+* Google Maps API
+* JavaScript
+* CSS
+
+## PWA
+
+* Web App Manifest
+* Service Worker
 
 ---
 
-## 📂 Estrutura do projeto
+# 📂 Estrutura do Projeto
 
-```
+```text
 app_barricada/
-│
+
 ├── backend/
 │   ├── main.py
-│   └── venv/
+│   ├── models.py
+│   ├── schemas.py
+│   ├── database.py
+│   └── requirements.txt
 │
 ├── frontend/
+│   ├── public/
+│   │   ├── manifest.json
+│   │   ├── service-worker.js
+│   │   ├── logo192.png
+│   │   └── logo512.png
+│   │
 │   ├── src/
+│   │   ├── pages/
+│   │   │   ├── MapPage.js
+│   │   │   └── Admin.js
+│   │   │
+│   │   ├── components/
+│   │   ├── App.js
+│   │   ├── index.js
+│   │   └── serviceWorkerRegistration.js
+│   │
 │   └── package.json
 │
-└── .gitignore
+└── README.md
 ```
 
 ---
 
-## ⚙️ Como rodar o projeto
+# ⚙️ Como Executar o Projeto
 
-### 🔹 1. Clonar o repositório
+## 1. Clonar o Repositório
 
 ```bash
 git clone https://github.com/charlesalves1/app_barricada.git
+
 cd app_barricada
 ```
 
 ---
 
-## 🔹 2. Rodar o BACKEND
-
-Abra um terminal:
+## 2. Executar o Backend
 
 ```bash
 cd backend
 ```
 
-Ativar ambiente virtual:
+Criar/ativar ambiente virtual:
+
+### Windows
 
 ```bash
-source venv/Scripts/activate
+venv\Scripts\activate
 ```
 
-Instalar dependências (se necessário):
+Instalar dependências:
 
 ```bash
-pip install fastapi uvicorn
+pip install -r requirements.txt
 ```
 
-Rodar servidor:
+Executar servidor:
 
 ```bash
 uvicorn main:app --reload
 ```
 
-👉 Backend rodando em:
+Backend disponível em:
 
-```
+```text
 http://127.0.0.1:8000
+```
+
+Swagger:
+
+```text
+http://127.0.0.1:8000/docs
 ```
 
 ---
 
-## 🔹 3. Rodar o FRONTEND
-
-Abra outro terminal:
+## 3. Executar o Frontend
 
 ```bash
 cd frontend
@@ -108,51 +159,128 @@ Instalar dependências:
 npm install
 ```
 
-Rodar aplicação:
+Executar aplicação:
 
 ```bash
 npm start
 ```
 
-👉 Frontend rodando em:
+Frontend disponível em:
 
-```
+```text
 http://localhost:3000
 ```
 
 ---
 
-## 🔗 Endpoints da API
+# 🔗 API
 
-* `GET /reports` → Lista todas as barricadas
-* `POST /report` → Cria um novo registro
+## Barricadas Ativas
 
----
-
-## 📌 Status do projeto
-
-✅ MVP funcional concluído
-🔄 Em evolução
+```http
+GET /reports
+```
 
 ---
 
-## 🔮 Próximas melhorias
+## Barricadas Pendentes
 
-* ⏱️ Tempo de criação das ocorrências
-* 👍 Sistema de confirmação de barricadas
-* 📱 Versão mobile
-* ☁️ Deploy em produção
-* 🗄️ Banco de dados (persistência)
+```http
+GET /reports/pending
+```
 
 ---
 
-## 💡 Sobre o projeto
+## Registrar Barricada
 
-Este projeto foi desenvolvido como prática de desenvolvimento fullstack, integrando backend em Python com frontend em React e manipulação de dados geográficos em tempo real.
+```http
+POST /report
+```
 
 ---
 
-## 👨‍💻 Autor
+## Aprovar Barricada
+
+```http
+PUT /reports/{id}/approve
+```
+
+---
+
+## Rejeitar Barricada
+
+```http
+PUT /reports/{id}/reject
+```
+
+---
+
+## Remover Barricada
+
+```http
+PUT /reports/{id}/remove
+```
+
+---
+
+# 📱 Progressive Web App (PWA)
+
+O projeto pode ser instalado em dispositivos Android e Desktop diretamente pelo navegador.
+
+Recursos disponíveis:
+
+* Instalação como aplicativo
+* Ícones personalizados
+* Tela standalone
+* Service Worker
+* Estrutura preparada para cache e futuras funcionalidades offline
+
+---
+
+# 📌 Status do Projeto
+
+## MVP em Desenvolvimento Ativo
+
+### Concluído
+
+* Geolocalização em tempo real
+* Cadastro anônimo de barricadas
+* Painel administrativo
+* Aprovação de registros
+* Remoção de barricadas
+* Navegação entre telas
+* Responsividade inicial
+* Estrutura PWA
+
+### Em Desenvolvimento
+
+* Melhorias de responsividade
+* Alertas sonoros
+* Melhor experiência mobile
+* Melhorias visuais do mapa
+
+### Planejado para versões futuras
+
+* Login administrativo
+* Controle de permissões
+* Confirmação comunitária de barricadas
+* Histórico de ocorrências
+* Dashboard administrativo
+* Notificações push
+* Deploy em produção
+* Banco de dados em nuvem
+
+---
+
+# 👨‍💻 Autor
 
 Charles Alves
-GitHub: https://github.com/charlesalves1
+
+GitHub:
+https://github.com/charlesalves1
+
+---
+
+# 📄 Licença
+
+Projeto desenvolvido para fins educacionais e de estudo.
