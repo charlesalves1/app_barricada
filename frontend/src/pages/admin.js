@@ -7,11 +7,11 @@ function Admin() {
   const loadData = async () => {
     try {
       const pendingResponse = await fetch(
-        "http://192.168.100.9:8000/reports/pending"
+        "https://app-barricada.onrender.com/reports/pending"
       );
 
       const activeResponse = await fetch(
-        "http://192.168.100.9:8000/reports/active"
+        "https://app-barricada.onrender.com/reports/active"
       );
 
       const pendingData =
@@ -33,7 +33,7 @@ function Admin() {
 
   const approveReport = async (id) => {
     await fetch(
-      `http://192.168.100.9:8000/reports/${id}/approve`,
+      `https://app-barricada.onrender.com/reports/${id}/approve`,
       {
         method: "PUT",
       }
@@ -44,7 +44,7 @@ function Admin() {
 
   const rejectReport = async (id) => {
     await fetch(
-      `http://192.168.100.9:8000/reports/${id}/reject`,
+      `https://app-barricada.onrender.com/reports/${id}/reject`,
       {
         method: "PUT",
       }
@@ -55,7 +55,7 @@ function Admin() {
 
   const removeReport = async (id) => {
     await fetch(
-      `http://192.168.100.9:8000/reports/${id}/remove`,
+      `https://app-barricada.onrender.com/reports/${id}/remove`,
       {
         method: "PUT",
       }

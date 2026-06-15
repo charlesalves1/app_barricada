@@ -143,7 +143,7 @@ function MapPage() {
   const loadPoints = async () => {
     try {
       const res = await fetch(
-        "http://192.168.100.9:8000/reports"
+        "https://app-barricada.onrender.com/reports"
       );
 
       const data = await res.json();
@@ -227,7 +227,7 @@ function MapPage() {
 
     try {
       await fetch(
-        "http://192.168.100.9:8000/report",
+        "https://app-barricada.onrender.com/report",
         {
           method: "POST",
           headers: {
