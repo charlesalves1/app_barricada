@@ -3,6 +3,7 @@ import {
   useState,
   useMemo,
 } from "react";
+
 import {
   GoogleMap,
   Marker,
@@ -113,12 +114,18 @@ function MapPage() {
             lng: position.coords.longitude,
           });
         },
+
         (error) => {
           console.error(
             "Erro ao obter localização:",
             error
           );
+
+          alert(
+            `GPS ERRO ${error.code}: ${error.message}`
+          );
         },
+
         {
           enableHighAccuracy: true,
           timeout: 10000,
@@ -136,7 +143,7 @@ function MapPage() {
   const loadPoints = async () => {
     try {
       const res = await fetch(
-        "http://127.0.0.1:8000/reports"
+        "http://192.168.100.9:8000/reports"
       );
 
       const data = await res.json();
@@ -220,7 +227,7 @@ function MapPage() {
 
     try {
       await fetch(
-        "http://127.0.0.1:8000/report",
+        "http://192.168.100.9:8000/report",
         {
           method: "POST",
           headers: {
