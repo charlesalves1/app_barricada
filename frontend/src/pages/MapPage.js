@@ -64,6 +64,14 @@ function MapPage() {
   const [userLocation, setUserLocation] =
     useState(null);
 
+  const [mapCenter, setMapCenter] =
+    useState(defaultCenter);
+
+  const [
+    locationInitialized,
+    setLocationInitialized,
+  ] = useState(false);
+
   const [
     nearestDistance,
     setNearestDistance,
@@ -109,10 +117,26 @@ function MapPage() {
     const watchId =
       navigator.geolocation.watchPosition(
         (position) => {
-          setUserLocation({
+          const newLocation = {
             lat: position.coords.latitude,
             lng: position.coords.longitude,
-          });
+          };
+
+          setUserLocation(
+            newLocation
+          );
+
+          if (
+            !locationInitialized
+          ) {
+            setMapCenter(
+              newLocation
+            );
+
+            setLocationInitialized(
+              true
+            );
+          }
         },
 
         (error) => {
@@ -138,7 +162,7 @@ function MapPage() {
         watchId
       );
     };
-  }, []);
+  }, [locationInitialized]);
 
   const loadPoints = async () => {
     try {
@@ -169,7 +193,9 @@ function MapPage() {
 
       if (cachedReports) {
         setPoints(
-          JSON.parse(cachedReports)
+          JSON.parse(
+            cachedReports
+          )
         );
 
         setIsOffline(true);
@@ -180,12 +206,10 @@ function MapPage() {
   useEffect(() => {
     loadPoints();
 
-    const interval = setInterval(
-      () => {
+    const interval =
+      setInterval(() => {
         loadPoints();
-      },
-      30000
-    );
+      }, 30000);
 
     return () =>
       clearInterval(interval);
@@ -216,14 +240,19 @@ function MapPage() {
       }
     });
 
-    setNearestDistance(nearest);
+    setNearestDistance(
+      nearest
+    );
   }, [userLocation, points]);
 
   const handleMapClick = async (
     event
   ) => {
-    const lat = event.latLng.lat();
-    const lng = event.latLng.lng();
+    const lat =
+      event.latLng.lat();
+
+    const lng =
+      event.latLng.lng();
 
     try {
       await fetch(
@@ -272,9 +301,12 @@ function MapPage() {
         style={{
           height: "100vh",
           display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
+          flexDirection:
+            "column",
+          justifyContent:
+            "center",
+          alignItems:
+            "center",
           padding: "20px",
           textAlign: "center",
         }}
@@ -284,8 +316,9 @@ function MapPage() {
         </h2>
 
         <p>
-          O mapa do Google não está
-          disponível sem internet.
+          O mapa do Google não
+          está disponível sem
+          internet.
         </p>
 
         <p>
@@ -304,45 +337,59 @@ function MapPage() {
       {isOffline && (
         <div
           style={{
-            position: "absolute",
+            position:
+              "absolute",
             top: 10,
             left: "50%",
             transform:
               "translateX(-50%)",
             zIndex: 9999,
-            background: "#d32f2f",
+            background:
+              "#d32f2f",
             color: "#fff",
-            padding: "8px 15px",
-            borderRadius: "8px",
-            fontWeight: "bold",
+            padding:
+              "8px 15px",
+            borderRadius:
+              "8px",
+            fontWeight:
+              "bold",
           }}
         >
           📡 Modo Offline
         </div>
       )}
 
-      {nearestDistance !== null &&
-        nearestDistance <= 500 && (
+      {nearestDistance !==
+        null &&
+        nearestDistance <=
+          500 && (
           <div
             style={{
-              position: "absolute",
+              position:
+                "absolute",
               top: 75,
               left: "50%",
               transform:
                 "translateX(-50%)",
               zIndex: 9999,
-              padding: "15px 25px",
-              borderRadius: "10px",
-              fontWeight: "bold",
-              fontSize: "18px",
+              padding:
+                "15px 25px",
+              borderRadius:
+                "10px",
+              fontWeight:
+                "bold",
+              fontSize:
+                "18px",
               color: "#fff",
               backgroundColor:
-                nearestDistance <= 300
+                nearestDistance <=
+                300
                   ? "#d32f2f"
                   : "#f57c00",
             }}
           >
-            {nearestDistance <= 300
+            {nearestDistance <=
+            300
               ? `🚨 ATENÇÃO! Barricada a ${Math.round(
                   nearestDistance
                 )}m`
@@ -356,16 +403,17 @@ function MapPage() {
         mapContainerStyle={
           containerStyle
         }
-        center={
-          userLocation ||
-          defaultCenter
-        }
+        center={mapCenter}
         zoom={15}
-        onClick={handleMapClick}
+        onClick={
+          handleMapClick
+        }
       >
         {userLocation && (
           <Marker
-            position={userLocation}
+            position={
+              userLocation
+            }
             title="Você está aqui"
             icon={{
               url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png",
