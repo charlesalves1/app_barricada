@@ -400,15 +400,11 @@ function MapPage() {
         )}
 
       <GoogleMap
-        mapContainerStyle={
-          containerStyle
-        }
-        center={mapCenter}
-        zoom={15}
-        onClick={
-          handleMapClick
-        }
-      >
+  mapContainerStyle={containerStyle}
+  defaultCenter={mapCenter}
+  zoom={15}
+  onClick={handleMapClick}
+>
         {userLocation && (
           <Marker
             position={
