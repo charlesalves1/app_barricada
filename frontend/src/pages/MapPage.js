@@ -401,9 +401,12 @@ function MapPage() {
 
       <GoogleMap
   mapContainerStyle={containerStyle}
-  defaultCenter={mapCenter}
+  center={mapCenter}
   zoom={15}
   onClick={handleMapClick}
+  onLoad={(map) => {
+    console.log("MAPA CARREGADO");
+  }}
 >
         {userLocation && (
           <Marker
