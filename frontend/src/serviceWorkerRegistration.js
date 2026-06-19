@@ -1,32 +1,25 @@
 export function register() {
-  if ("serviceWorker" in navigator) {
-    window.addEventListener("load", () => {
-      const swUrl = "/service-worker.js";
-
-      navigator.serviceWorker
-        .register(swUrl)
-        .then((registration) => {
-          console.log(
-            "Service Worker registrado:",
-            registration
-          );
-        })
-        .catch((error) => {
-          console.error(
-            "Erro ao registrar Service Worker:",
-            error
-          );
-        });
-    });
-  }
+  // desativado durante desenvolvimento
 }
 
 export function unregister() {
   if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.ready.then(
-      (registration) => {
-        registration.unregister();
-      }
-    );
+    navigator.serviceWorker
+      .getRegistrations()
+      .then((registrations) => {
+        registrations.forEach(
+          (registration) => {
+            registration.unregister();
+          }
+        );
+      });
+
+    if ("caches" in window) {
+      caches.keys().then((names) => {
+        names.forEach((name) => {
+          caches.delete(name);
+        });
+      });
+    }
   }
 }
