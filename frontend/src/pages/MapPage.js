@@ -64,8 +64,11 @@ function MapPage() {
   const [userLocation, setUserLocation] =
     useState(null);
 
-  const [mapCenter, setMapCenter] =
-    useState(defaultCenter);
+ const [mapCenter, setMapCenter] =
+  useState(defaultCenter);
+
+const [mapInstance, setMapInstance] =
+  useState(null);
 
   const [
     locationInitialized,
@@ -294,7 +297,18 @@ function MapPage() {
         )
       );
     }, [points]);
+const centerOnUser = () => {
+  if (
+    mapInstance &&
+    userLocation
+  ) {
+    mapInstance.panTo(
+      userLocation
+    );
 
+    mapInstance.setZoom(15);
+  }
+};
   if (!isOnline) {
     return (
       <div
@@ -358,7 +372,26 @@ function MapPage() {
           📡 Modo Offline
         </div>
       )}
-
+<button
+  onClick={centerOnUser}
+  style={{
+    position: "absolute",
+    bottom: "100px",
+    right: "20px",
+    zIndex: 9999,
+    width: "55px",
+    height: "55px",
+    borderRadius: "50%",
+    border: "none",
+    background: "#fff",
+    boxShadow:
+      "0 2px 10px rgba(0,0,0,0.3)",
+    fontSize: "24px",
+    cursor: "pointer",
+  }}
+>
+  📍
+</button>
       {nearestDistance !==
         null &&
         nearestDistance <=
@@ -399,15 +432,26 @@ function MapPage() {
           </div>
         )}
 
-      <GoogleMap
-  mapContainerStyle={containerStyle}
+     <GoogleMap
+  mapContainerStyle={
+    containerStyle
+  }
   center={mapCenter}
   zoom={15}
-  onClick={handleMapClick}
+  onClick={
+    handleMapClick
+  }
   onLoad={(map) => {
-    console.log("MAPA CARREGADO");
+    console.log(
+      "MAPA CARREGADO"
+    );
+
+    setMapInstance(
+      map
+    );
   }}
 >
+
         {userLocation && (
           <Marker
             position={
