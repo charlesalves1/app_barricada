@@ -5,7 +5,7 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 
 import {
-  register,
+  unregister,
 } from "./serviceWorkerRegistration";
 
 const root = ReactDOM.createRoot(
@@ -18,6 +18,6 @@ root.render(
   </React.StrictMode>
 );
 
-register();
+unregister();
 
 reportWebVitals();
