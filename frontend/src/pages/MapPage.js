@@ -432,15 +432,18 @@ const centerOnUser = () => {
           </div>
         )}
 
-     <GoogleMap
-  mapContainerStyle={
-    containerStyle
-  }
+    <GoogleMap
+  mapContainerStyle={containerStyle}
   center={mapCenter}
   zoom={15}
-  onClick={
-    handleMapClick
-  }
+  onClick={handleMapClick}
+  options={{
+    gestureHandling: "greedy",
+  zoomControl: true,
+  streetViewControl: false,
+  mapTypeControl: false,
+  fullscreenControl: false,
+  }}
   onLoad={(map) => {
     console.log(
       "MAPA CARREGADO"
