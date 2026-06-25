@@ -7,6 +7,8 @@ import {
 import {
   GoogleMap,
   Marker,
+  Autocomplete,
+  DirectionsRenderer,
 } from "@react-google-maps/api";
 
 const containerStyle = {
@@ -69,6 +71,18 @@ function MapPage() {
 
 const [mapInstance, setMapInstance] =
   useState(null);
+const [autocomplete, setAutocomplete] =
+  useState(null);
+
+const [destination, setDestination] =
+  useState("");
+const [directions, setDirections] =
+  useState(null);
+
+const [routeInfo, setRouteInfo] =
+  useState(null);
+const [routeBarricades, setRouteBarricades] =
+  useState(0);
 
   const [
     locationInitialized,
@@ -309,6 +323,89 @@ const centerOnUser = () => {
     mapInstance.setZoom(15);
   }
 };
+
+const calculateRoute = () => {
+  if (
+    !autocomplete ||
+    !userLocation
+  ) {
+    return;
+  }
+
+  const place =
+    autocomplete.getPlace();
+
+  if (
+    !place ||
+    !place.geometry
+  ) {
+    return;
+  }
+
+  const directionsService =
+    new window.google.maps.DirectionsService();
+
+  directionsService.route(
+    {
+      origin: userLocation,
+
+      destination:
+        place.geometry.location,
+
+      travelMode:
+        window.google.maps.TravelMode
+          .DRIVING,
+    },
+
+    (result, status) => {
+      if (
+        status === "OK"
+      ) {
+        setDirections(
+          result
+        );
+
+        const leg =
+          result.routes[0]
+            .legs[0];
+
+        setRouteInfo({
+          distance:
+            leg.distance.text,
+          duration:
+            leg.duration.text,
+        });
+        const routePath =
+  result.routes[0].overview_path;
+
+let barricadesFound = 0;
+
+points.forEach((point) => {
+  const isNearRoute =
+    routePath.some((coord) => {
+      const distance =
+        calculateDistance(
+          coord.lat(),
+          coord.lng(),
+          point.latitude,
+          point.longitude
+        );
+
+      return distance <= 100;
+    });
+
+  if (isNearRoute) {
+    barricadesFound++;
+  }
+});
+
+setRouteBarricades(
+  barricadesFound
+);
+      }
+    }
+  );
+};
   if (!isOnline) {
     return (
       <div
@@ -392,18 +489,120 @@ const centerOnUser = () => {
 >
   📍
 </button>
+
+<div
+  style={{
+    position: "absolute",
+    top: "10px",
+    left: "10px",
+    right: "10px",
+    zIndex: 10000,
+  }}
+>
+ <Autocomplete
+  onLoad={(auto) =>
+    setAutocomplete(auto)
+  }
+  onPlaceChanged={
+    calculateRoute
+  }
+>
+    <input
+      type="text"
+      placeholder="Para onde você quer ir?"
+      value={destination}
+      onChange={(e) =>
+        setDestination(
+          e.target.value
+        )
+      }
+      style={{
+        width: "100%",
+        height: "50px",
+        padding: "0 15px",
+        borderRadius: "25px",
+        border: "none",
+        outline: "none",
+        fontSize: "16px",
+        boxShadow:
+          "0 2px 10px rgba(0,0,0,0.25)",
+      }}
+    />
+  </Autocomplete>
+</div>
+{
+  routeInfo && (
+    <div
+      style={{
+        position:
+          "absolute",
+        top: "70px",
+        left: "50%",
+        transform:
+          "translateX(-50%)",
+        zIndex: 10000,
+        background:
+          "#fff",
+        padding:
+          "12px 20px",
+        borderRadius:
+          "14px",
+        boxShadow:
+          "0 4px 15px rgba(0,0,0,0.2)",
+        minWidth:
+          "250px",
+        textAlign:
+          "center",
+      }}
+    >
+      <div
+        style={{
+          fontWeight:
+            "bold",
+          fontSize:
+            "18px",
+        }}
+      >
+        🚗 {routeInfo.distance}
+      </div>
+
+      <div>
+        ⏱️ {routeInfo.duration}
+      </div>
+
+      <div
+        style={{
+          marginTop:
+            "6px",
+          color:
+            routeBarricades > 0
+              ? "#d32f2f"
+              : "#388e3c",
+          fontWeight:
+            "bold",
+        }}
+      >
+        🚧 {routeBarricades}
+        {" "}
+        barricada(s)
+        na rota
+      </div>
+    </div>
+  )
+}
       {nearestDistance !==
         null &&
         nearestDistance <=
           500 && (
           <div
             style={{
-              position:
-                "absolute",
-              top: 75,
-              left: "50%",
-              transform:
-                "translateX(-50%)",
+              position: "absolute",
+                top: routeInfo
+                      ? 190
+                      : 80,
+                left: "50%",
+                transform:
+                 "translateX(-50%)",
               zIndex: 9999,
               padding:
                 "15px 25px",
@@ -468,6 +667,13 @@ const centerOnUser = () => {
         )}
 
         {barricadeMarkers}
+        {directions && (
+  <DirectionsRenderer
+    directions={
+      directions
+    }
+  />
+)}
       </GoogleMap>
     </>
   );
