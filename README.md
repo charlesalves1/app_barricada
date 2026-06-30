@@ -1,287 +1,226 @@
 # 🚧 Tem Barricada Aí?
 
-Aplicação colaborativa para monitoramento e visualização de barricadas em ruas, bairros e regiões.
+Aplicativo colaborativo para informar, visualizar e evitar barricadas em ruas, bairros e regiões.
 
-O sistema permite que qualquer usuário informe anonimamente a existência de uma barricada através do mapa. As informações passam por validação administrativa antes de serem exibidas para os demais usuários.
+O objetivo do projeto é permitir que usuários reportem barricadas em tempo real e consultem informações atualizadas sobre obstáculos urbanos, aumentando a segurança e melhorando o planejamento de deslocamentos.
 
 ---
 
-## 🎯 Objetivo
+# 📱 Demonstração
 
-Ajudar a população a identificar regiões com barricadas, fornecendo uma ferramenta simples, colaborativa e acessível através de navegador ou instalação como aplicativo (PWA).
+Frontend:
+https://SEU-PROJETO.vercel.app
+
+Backend:
+https://app-barricada.onrender.com
 
 ---
 
 # 🚀 Funcionalidades
 
-### Usuário
+## 🗺️ Mapa Interativo
 
-* 📍 Localização em tempo real via GPS
-* 🗺️ Visualização de mapa interativo
-* 🚧 Registro anônimo de barricadas
-* 📌 Exibição de barricadas aprovadas
-* ⚠️ Alerta visual de proximidade de barricadas
-* 📱 Compatível com dispositivos móveis
-* 📲 Instalação como aplicativo (PWA)
-
-### Administração
-
-* 📋 Visualização de barricadas pendentes
-* ✅ Aprovação de barricadas
-* ❌ Rejeição de barricadas
-* 🗑️ Remoção de barricadas ativas
-* 🔄 Atualização dinâmica dos registros
+- Visualização das barricadas em mapa Google Maps.
+- Atualização automática dos dados.
+- Marcadores personalizados para barricadas.
 
 ---
 
-# 🧱 Tecnologias Utilizadas
+## 📍 Geolocalização
 
-## Backend
+- Obtém a localização atual do usuário.
+- Exibe posição em tempo real.
+- Botão para centralizar novamente no usuário.
 
-* Python
-* FastAPI
-* SQLAlchemy
-* SQLite
-* Uvicorn
+---
+
+## 🚨 Alertas de Proximidade
+
+Quando uma barricada estiver próxima:
+
+- Alerta visual em laranja.
+- Alerta crítico em vermelho.
+- Distância calculada em tempo real.
+
+---
+
+## ➕ Reporte de Barricadas
+
+Usuários podem:
+
+- Selecionar um ponto no mapa.
+- Criar uma nova ocorrência.
+- Atualizar automaticamente todos os usuários.
+
+---
+
+## 📱 Compatibilidade Mobile
+
+Testado em dispositivos Android:
+
+- Permissões de GPS.
+- Navegação por toque.
+- Arraste do mapa com um dedo.
+- Responsividade da interface.
+
+---
+
+## 🔎 Pesquisa de Destino
+
+Integração com Google Places API.
+
+Permite:
+
+- Buscar endereços.
+- Buscar bairros.
+- Buscar cidades.
+
+Exemplos:
+
+- Madureira
+- Copacabana
+- Barra da Tijuca
+
+---
+
+## 🌐 Funcionamento Offline
+
+Caso a conexão seja perdida:
+
+- Exibe aviso de modo offline.
+- Utiliza dados armazenados localmente.
+- Mantém acesso às últimas barricadas carregadas.
+
+---
+
+# 🛠️ Tecnologias Utilizadas
 
 ## Frontend
 
-* React
-* React Router DOM
-* Google Maps API
-* JavaScript
-* CSS
+- React
+- React Router DOM
+- Google Maps JavaScript API
+- Places API
+- PWA
 
-## PWA
+## Backend
 
-* Web App Manifest
-* Service Worker
+- Node.js
+- Express
+
+## Banco de Dados
+
+- PostgreSQL
+
+## Deploy
+
+- Vercel (Frontend)
+- Render (Backend)
 
 ---
 
 # 📂 Estrutura do Projeto
 
-```text
-app_barricada/
-
-├── backend/
-│   ├── main.py
-│   ├── models.py
-│   ├── schemas.py
-│   ├── database.py
-│   └── requirements.txt
+frontend/
+├── src/
+│ ├── components/
+│ ├── pages/
+│ ├── services/
+│ └── App.js
 │
-├── frontend/
-│   ├── public/
-│   │   ├── manifest.json
-│   │   ├── service-worker.js
-│   │   ├── logo192.png
-│   │   └── logo512.png
-│   │
-│   ├── src/
-│   │   ├── pages/
-│   │   │   ├── MapPage.js
-│   │   │   └── Admin.js
-│   │   │
-│   │   ├── components/
-│   │   ├── App.js
-│   │   ├── index.js
-│   │   └── serviceWorkerRegistration.js
-│   │
-│   └── package.json
-│
-└── README.md
-```
+backend/
+├── routes/
+├── controllers/
+├── database/
+└── server.js
 
 ---
 
-# ⚙️ Como Executar o Projeto
+# ⚙️ Instalação
 
-## 1. Clonar o Repositório
-
-```bash
-git clone https://github.com/charlesalves1/app_barricada.git
-
-cd app_barricada
-```
-
----
-
-## 2. Executar o Backend
-
-```bash
-cd backend
-```
-
-Criar/ativar ambiente virtual:
-
-### Windows
-
-```bash
-venv\Scripts\activate
-```
-
-Instalar dependências:
-
-```bash
-pip install -r requirements.txt
-```
-
-Executar servidor:
-
-```bash
-uvicorn main:app --reload
-uvicorn main:app --host 0.0.0.0 --port 8000 --reload
-```
-
-Backend disponível em:
-
-```text
-http://127.0.0.1:8000
-```
-
-Swagger:
-
-```text
-http://127.0.0.1:8000/docs
-```
-
----
-
-## 3. Executar o Frontend
+## Frontend
 
 ```bash
 cd frontend
-```
-
-Instalar dependências:
-
-```bash
 npm install
-```
-
-Executar aplicação:
-
-```bash
 npm start
 ```
 
-Frontend disponível em:
+## Backend
 
-```text
-http://localhost:3000
+```bash
+cd backend
+npm install
+npm start
 ```
 
 ---
 
-# 🔗 API
+# 🔑 Variáveis de Ambiente
 
-## Barricadas Ativas
+Frontend (.env)
 
-```http
-GET /reports
+```env
+REACT_APP_GOOGLE_MAPS_API_KEY=SUA_CHAVE
 ```
 
 ---
 
-## Barricadas Pendentes
+# 📌 Roadmap
 
-```http
-GET /reports/pending
-```
+## MVP Atual
 
----
-
-## Registrar Barricada
-
-```http
-POST /report
-```
-
----
-
-## Aprovar Barricada
-
-```http
-PUT /reports/{id}/approve
-```
+- [x] Mapa Google Maps
+- [x] Geolocalização
+- [x] Cadastro de barricadas
+- [x] Alerta de proximidade
+- [x] Botão "Minha Localização"
+- [x] Busca por destinos
+- [x] Compatibilidade Android
+- [x] Funcionamento Offline
 
 ---
 
-## Rejeitar Barricada
+## Próximas Funcionalidades
 
-```http
-PUT /reports/{id}/reject
-```
+### Rotas Inteligentes
 
----
+- [ ] Directions API
+- [ ] Exibir rota até destino
+- [ ] Exibir distância e tempo
+- [ ] Destacar barricadas na rota
 
-## Remover Barricada
+### Sistema Colaborativo
 
-```http
-PUT /reports/{id}/remove
-```
+- [ ] Confirmar barricada
+- [ ] Remover barricada inexistente
+- [ ] Níveis de confiabilidade
 
----
+### Administração
 
-# 📱 Progressive Web App (PWA)
+- [ ] Dashboard
+- [ ] Estatísticas
+- [ ] Heatmap
 
-O projeto pode ser instalado em dispositivos Android e Desktop diretamente pelo navegador.
+### Segurança
 
-Recursos disponíveis:
-
-* Instalação como aplicativo
-* Ícones personalizados
-* Tela standalone
-* Service Worker
-* Estrutura preparada para cache e futuras funcionalidades offline
+- [ ] Login de usuários
+- [ ] Controle de permissões
 
 ---
 
-# 📌 Status do Projeto
+# 🎯 Objetivo
 
-## MVP em Desenvolvimento Ativo
-
-### Concluído
-
-* Geolocalização em tempo real
-* Cadastro anônimo de barricadas
-* Painel administrativo
-* Aprovação de registros
-* Remoção de barricadas
-* Navegação entre telas
-* Responsividade inicial
-* Estrutura PWA
-
-### Em Desenvolvimento
-
-* Melhorias de responsividade
-* Alertas sonoros
-* Melhor experiência mobile
-* Melhorias visuais do mapa
-
-### Planejado para versões futuras
-
-* Login administrativo
-* Controle de permissões
-* Confirmação comunitária de barricadas
-* Histórico de ocorrências
-* Dashboard administrativo
-* Notificações push
-* Deploy em produção
-* Banco de dados em nuvem
+Criar uma plataforma colaborativa semelhante ao Waze, focada na identificação e prevenção de áreas com barricadas, auxiliando moradores, motoristas, entregadores e serviços públicos.
 
 ---
 
-# 👨‍💻 Autor
+# 👨‍💻 Equipe
 
-Charles Alves
-
-GitHub:
-https://github.com/charlesalves1
+Projeto desenvolvido como MVP acadêmico para validação de conceito e evolução futura para plataforma de monitoramento colaborativo urbano.
 
 ---
 
 # 📄 Licença
 
-Projeto desenvolvido para fins educacionais e de estudo.
+Projeto desenvolvido para fins acadêmicos e de pesquisa.
