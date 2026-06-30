@@ -375,23 +375,27 @@ const calculateRoute = () => {
           duration:
             leg.duration.text,
         });
-        const routePath =
+       const routePath =
   result.routes[0].overview_path;
 
 let barricadesFound = 0;
 
 points.forEach((point) => {
+  const pointLatLng =
+    new window.google.maps.LatLng(
+      point.latitude,
+      point.longitude
+    );
+
   const isNearRoute =
     routePath.some((coord) => {
       const distance =
-        calculateDistance(
-          coord.lat(),
-          coord.lng(),
-          point.latitude,
-          point.longitude
+        window.google.maps.geometry.spherical.computeDistanceBetween(
+          coord,
+          pointLatLng
         );
 
-      return distance <= 100;
+      return distance <= 500;
     });
 
   if (isNearRoute) {
